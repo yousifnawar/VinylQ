@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>VinylQ</string>
+    <key>CFBundleDisplayName</key>
+    <string>VinylQ</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$(MARKETING_VERSION)</string>
+    <key>CFBundleVersion</key>
+    <string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.music</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSSupportsAutomaticTermination</key>
+    <false/>
+    <key>NSSupportsSuddenTermination</key>
+    <false/>
+
+    <!-- VinylQ drives the players you already use, over Apple Events. -->
+    <key>NSAppleEventsUsageDescription</key>
+    <string>VinylQ controls the Music app and Spotify so it can show what's playing, move the needle and skip tracks. It uses the account you're already signed in with.</string>
+
+    <!-- vinylq:// links: shortcuts such as vinylq://notch or vinylq://timer
+         that the widgets and the menu use. wax:// is kept for anything made
+         before the rename. (Spotify's sign-in redirect is caught by the
+         sign-in sheet itself and needs no scheme here.) -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>app.wax.deck.links</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>vinylq</string>
+                <string>wax</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>
