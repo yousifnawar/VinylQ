@@ -7,6 +7,17 @@ all in one place.
 
 ![The deck](Screenshots/01-deck.png)
 
+## Download
+
+Grab **VinylQ.zip** from the [latest release](https://github.com/yousifnawar/VinylQ/releases/latest),
+unzip it and drag `VinylQ.app` to Applications.
+
+The release build isn't notarized, so macOS will refuse the first launch.
+Right-click the app → **Open** → **Open**, or run
+`xattr -dr com.apple.quarantine /Applications/VinylQ.app`. Desktop widgets need
+a build signed with your own Apple Development certificate — use `./build.sh`
+below for those.
+
 ## Quick start
 
 ```bash

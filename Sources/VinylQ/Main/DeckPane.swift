@@ -23,7 +23,7 @@ struct DeckPane: View {
 
             VStack(alignment: .leading, spacing: 20) {
                 nowPlaying
-                TransportBar(engine: engine, scale: 15)
+                TransportBar(engine: engine, scale: 15, showsVolume: true)
                 speedPicker
                 actions
                 if engine.automationBlocked { permissionNote }

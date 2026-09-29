@@ -153,7 +153,7 @@ struct AmbientView: View {
             .transition(.opacity.combined(with: .offset(y: 6)))
             .animation(.easeInOut(duration: 0.45), value: engine.snapshot.track.id)
 
-            TransportBar(engine: engine, scale: 16)
+            TransportBar(engine: engine, scale: 16, showsVolume: true)
                 .opacity(chromeVisible ? 1 : 0.35)
         }
     }

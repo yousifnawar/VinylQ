@@ -102,6 +102,20 @@ final class SpotifyProvider: MusicProvider, @unchecked Sendable {
         tell("set player position to (\(ms) / 1000)")
     }
 
+    // MARK: Volume
+
+    func setVolume(_ level: Double) {
+        tell("set sound volume to \(Int((min(max(level, 0), 1) * 100).rounded()))")
+    }
+
+    /// Blocking Apple Event — call off the main thread.
+    func volume() -> Double? {
+        guard isAvailable,
+              let text = runner.string("tell application id \"\(Self.bundleID)\" to return (sound volume) as string"),
+              let value = Double(text) else { return nil }
+        return min(max(value / 100, 0), 1)
+    }
+
     // MARK: Library
 
     /// Liked Songs, Recently Played, your playlists (once signed in), and any

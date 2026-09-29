@@ -24,7 +24,11 @@ final class PlayerEngine: ObservableObject {
     /// Pulled from the artwork so the deck picks up the record's colour.
     @Published private(set) var accent: Color = Theme.brass
     @Published private(set) var accentRGB: WidgetState.RGB = .brass
-    @Published private(set) var activeKind: SourceKind = .demo
+    @Published private(set) var activeKind: SourceKind = .demo {
+        didSet { if activeKind != oldValue { syncVolume() } }
+    }
+    /// Output level of the active source, `0...1`.
+    @Published private(set) var volume: Double = 1
 
     @Published private(set) var playlists: [Playlist] = []
     @Published private(set) var openPlaylist: Playlist?
@@ -269,6 +273,31 @@ final class PlayerEngine: ObservableObject {
         let seconds = min(max(progress, 0), 1) * snapshot.track.duration
         activeProvider.seek(to: seconds)
         rebase(to: seconds)
+    }
+
+    // MARK: Volume
+
+    func setVolume(_ level: Double) {
+        let clamped = min(max(level, 0), 1)
+        volume = clamped
+        volumeAdjustedAt = Date()
+        activeProvider.setVolume(clamped)
+    }
+
+    private var volumeAdjustedAt = Date.distantPast
+
+    /// Picks up the level the active source is already at, so the slider
+    /// starts where the app actually is.
+    private func syncVolume() {
+        let provider = activeProvider
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard let level = provider.volume() else { return }
+            Task { @MainActor in
+                guard let self, self.activeProvider === provider,
+                      Date().timeIntervalSince(self.volumeAdjustedAt) > 1 else { return }
+                self.volume = level
+            }
+        }
     }
 
     // MARK: Library

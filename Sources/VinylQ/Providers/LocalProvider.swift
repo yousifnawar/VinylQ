@@ -187,6 +187,15 @@ final class LocalProvider: NSObject, MusicProvider, AVAudioPlayerDelegate, @unch
         }
     }
 
+    private var level: Double = 1
+
+    func setVolume(_ level: Double) {
+        self.level = min(max(level, 0), 1)
+        player?.volume = Float(self.level)
+    }
+
+    func volume() -> Double? { level }
+
     func seek(to seconds: Double) {
         guard let player else { return }
         player.currentTime = min(max(0, seconds), player.duration)
@@ -204,6 +213,7 @@ final class LocalProvider: NSObject, MusicProvider, AVAudioPlayerDelegate, @unch
             return
         }
         fresh.delegate = self
+        fresh.volume = Float(level)
         fresh.prepareToPlay()
         fresh.play()
         player = fresh

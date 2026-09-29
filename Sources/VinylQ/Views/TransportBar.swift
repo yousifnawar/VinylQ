@@ -14,6 +14,7 @@ struct TransportBar: View {
     /// Centred reads better when the bar stands alone; leading lines up with
     /// a title above it.
     var centred: Bool = false
+    var showsVolume: Bool = false
 
     var body: some View {
         VStack(spacing: scale * 0.55) {
@@ -21,6 +22,11 @@ struct TransportBar: View {
                 ScrubBar(engine: engine, scale: scale, showsTime: showsTime)
             }
             buttons
+            if showsVolume {
+                VolumeSlider(engine: engine, scale: scale)
+                    .frame(maxWidth: scale * 12)
+                    .frame(maxWidth: .infinity, alignment: centred ? .center : .leading)
+            }
         }
     }
 
@@ -101,6 +107,73 @@ private struct ScrubBar: View {
                 }
             }
         }
+    }
+}
+
+/// Speaker icon and a thin slider; click the icon to mute.
+private struct VolumeSlider: View {
+    @ObservedObject var engine: PlayerEngine
+    var scale: CGFloat
+
+    @State private var hovering = false
+    @State private var dragging = false
+    @State private var mutedFrom: Double?
+
+    private var symbol: String {
+        switch engine.volume {
+        case 0: return "speaker.slash.fill"
+        case ..<0.34: return "speaker.wave.1.fill"
+        case ..<0.67: return "speaker.wave.2.fill"
+        default: return "speaker.wave.3.fill"
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: scale * 0.6) {
+            Button {
+                if engine.volume > 0 {
+                    mutedFrom = engine.volume
+                    engine.setVolume(0)
+                } else {
+                    engine.setVolume(mutedFrom ?? 0.6)
+                }
+            } label: {
+                Image(systemName: symbol)
+                    .font(.system(size: scale * 0.8))
+                    .foregroundStyle(Theme.creamSoft)
+                    .frame(width: scale * 1.4, height: scale * 1.4)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help("Mute")
+
+            GeometryReader { proxy in
+                let width = proxy.size.width
+                let thick = dragging || hovering
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.white.opacity(0.10))
+                    Capsule().fill(engine.accent.opacity(0.9))
+                        .frame(width: max(0, width * engine.volume))
+                }
+                .frame(height: scale * (thick ? 0.36 : 0.24))
+                .frame(height: scale * 0.9)
+                .contentShape(Rectangle())
+                .onHover { hovering = $0 }
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            dragging = true
+                            engine.setVolume(value.location.x / max(width, 1))
+                        }
+                        .onEnded { _ in dragging = false }
+                )
+                .animation(.spring(response: 0.25, dampingFraction: 0.8), value: thick)
+            }
+            .frame(height: scale * 0.9)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Volume")
+        .accessibilityValue("\(Int(engine.volume * 100)) percent")
     }
 }
 

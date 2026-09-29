@@ -31,6 +31,12 @@ protocol MusicProvider: AnyObject, Sendable {
     /// The whole point of the stylus: jump to `seconds` into the track.
     func seek(to seconds: Double)
 
+    /// Output level, `0...1`. Spotify and Music set their own app's volume;
+    /// local files set the player's.
+    func setVolume(_ level: Double)
+    /// The level the source is at right now, if it can say.
+    func volume() -> Double?
+
     // Library
     func playlists() -> [Playlist]
     func tracks(in playlist: Playlist) -> [Track]
@@ -39,6 +45,8 @@ protocol MusicProvider: AnyObject, Sendable {
 
 extension MusicProvider {
     var runsOffMainThread: Bool { false }
+    func setVolume(_ level: Double) {}
+    func volume() -> Double? { nil }
     func artwork(for track: Track) -> NSImage? { nil }
     func playlists() -> [Playlist] { [] }
     func tracks(in playlist: Playlist) -> [Track] { [] }
